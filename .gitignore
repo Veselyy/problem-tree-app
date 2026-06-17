@@ -1,0 +1,13 @@
+# Virtuální prostředí
+.venv/
+venv/
+ENV/
+
+# Python mezipaměť
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Nastavení editorů
+.vscode/
+.idea/
