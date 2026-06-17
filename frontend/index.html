@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problem Tree Analysis</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 40px;
+            color: #212529;
+        }
+        h1 {
+            color: #343a40;
+            margin-bottom: 5px;
+        }
+        p.subtitle {
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+        #nodes-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 600px;
+        }
+        .problem-card {
+            background: white;
+            padding: 16px;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 5px solid #6c757d;
+            font-weight: 500;
+        }
+        .problem-card.core {
+            border-left-color: #dc3545;
+            background-color: #fff5f5;
+            font-size: 1.1em;
+        }
+        .problem-card.cause {
+            border-left-color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Problem Tree Diagram</h1>
+    <p class="subtitle">Analyzing core problems and their root causes.</p>
+
+    <div id="nodes-container">Loading problem nodes...</div>
+
+    <script>
+        async function loadProblems() {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/nodes');
+                const nodes = await response.json();
+                
+                const container = document.getElementById('nodes-container');
+                container.innerHTML = '';
+
+                function getDepth(node, allNodes) {
+                    let depth = 0;
+                    let current = node;
+
+                    while (current.parent_id !== null) {
+                        depth++;
+                        current = allNodes.find(n => n.id === current.parent_id);
+                        if (!current) break;
+                    }
+
+                    return depth;
+                }
+
+                nodes.forEach(node => {
+                    const card = document.createElement('div');
+                    card.className = 'problem-card';
+                    
+                    if (node.parent_id === null) {
+                        card.classList.add('core');
+                    } else {
+                        card.classList.add('cause');
+                    }
+
+                    const depth = getDepth(node, nodes);
+                    card.style.marginLeft = `${depth * 30}px`;
+
+                    card.innerHTML = `<div>${node.title}</div>`;
+                    
+                    container.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                document.getElementById('nodes-container').innerText = 'Failed to load data from the backend.';
+            }
+        }
+
+        loadProblems();
+    </script>
+</body>
+</html>

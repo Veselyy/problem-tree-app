@@ -1,30 +1,39 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
-tasks_db = [
+problems_db = [
     {
         "id": 1,
-        "title": "Spuštění e-shopu",
-        "completed": False,
+        "title": "Low e-shop conversion rate",
         "parent_id": None
     },
     {
         "id": 2,
-        "title": "Návrh databáze",
-        "completed": True,
-        "parent_id": 1  # Tento uzel patří pod uzel s ID 1
+        "title": "Slow page load speed",
+        "parent_id": 1
+    },
+    {
+        "id": 3,
+        "title": "Confusing checkout process",
+        "parent_id": 1
+    },
+    {
+        "id": 4,
+        "title": "Unoptimized product images",
+        "parent_id": 2
     }
 ]
 
-@app.route('/')
+@app.route("/")
 def read_root():
-    return jsonify({'message': 'Ahoj z Flasku!'})
+    return jsonify({"message": "Flask backend for Problem Tree Analysis is running."})
 
-@app.route('/api/nodes', methods=['GET'])
+@app.route("/api/nodes", methods=["GET"])
 def get_nodes():
-    return jsonify(tasks_db)
+    return jsonify(problems_db)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True, port=8000)
-
